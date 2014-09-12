@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      jQuery插件-上传文件
+    </title>
+    <meta name="description" content="jQuery插件-上传文件- 带进度条的异步上传文件插件">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property='og:locale' content='en_US' />
+    <link rel="author" href="https://xiebaochun.github.io" />
+    <link href="../css/prettify.css" rel="stylesheet">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+
+    <script src="../js/jquery-1.10.2.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/run_prettify.js"></script>
+    <script src="js/jquery.itemscroll.js"></script>
+    <script src="js/main.js"></script>
+
+    <style>
+      .highlight { display: none;
+       /* hidden by default, until >480px */ 
+                  padding:9px 14px;
+                   margin-bottom: 14px; 
+                   background-color: #f7f7f9; 
+                   border: 1px solid #e1e1e8;
+     
+                   border-radius: 4px; 
+      } 
+      .highlight pre { 
+          padding: 0; 
+          margin-top: 0; 
+          margin-bottom: 0;
+          background-color: transparent; 
+          border: 0; 
+          white-space:nowrap; 
+        
+      } 
+      .highlight pre code {
+       font-size: inherit; 
+       color: #333; 
+       /* Effectively
+        the base text color */
+       }
+       .highlight pre .lineno {
+          display: inline-block;
+          width: 22px; 
+          padding-right: 5px; 
+          margin-right: 10px;
+          text-align: right;
+          color: #bebec5; 
+      } /* Show code snippets when we have the space */ 
+      @media screen and (min-width: 481px) {
+         .highlight { 
+              display: block; 
+         }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" rel="tooltip" href="http://xiebaochun.github.io/HTML5" title="xiebaochun.github.io Home Page">
+                  首页
+                </a>   
+          <a rel="tooltip" title="Download 代码 &amp; Examples" class="brand"
+          target="__blank" href="https://codeload.github.com/xiebaochun/itemscroll/zip/master">
+            下载
+          </a>
+          <div class="nav-collapse collapse" id="main-menu">
+            <ul class="nav" id="main-menu-left">
+              <li>
+                <a rel="tooltip" title="Github - jQuery Upload File"  target="__blank"
+                   href="https://github.com/xiebaochun/itemscroll">
+                   Github
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <br/>
+      <br/>
+      <section id="typography">
+        <div class="page-header">
+          <h2>
+            jQuery插件-内容滚动-v1.1.2
+          </h2>
+        </div>
+        <!-- Headings & Paragraph Copy -->
+        <div class="row">
+          <ul class="nav nav-tabs" style="margin-bottom: 15px;">
+            <li class="active">
+              <a href="#start" data-toggle="tab">
+                快速上手
+              </a>
+            </li>
+            <!-- <li>
+              <a href="#single" title="Single File upload" data-toggle="tab">
+                单个文件上传
+              </a>
+            </li>
+            <li>
+              <a href="#multi" title="Multiple File upload" data-toggle="tab">
+                多个文件上传
+              </a>
+            </li>
+            <li>
+              <a href="#advanced" title="Advanced File upload" data-toggle="tab">
+                高级应用
+              </a>
+            </li>
+            <li>
+              <a href="#event" title="event File upload" data-toggle="tab">
+                事件
+              </a>
+            </li>
+            <li>
+              <a href="#others" data-toggle="tab">
+                样式
+              </a>
+            </li>
+            <li>
+              <a href="#doc" data-toggle="tab">
+                API &amp; 配置
+              </a>
+            </li>
+            <li>
+              <a href="#server" data-toggle="tab">
+                服务端
+              </a>
+            </li> -->
+          </ul>
+          <div id="tabcontent" class="tab-content">
+            <div class="tab-pane fade active in" id="start">
+              <p>
+                此插件主要提供内容滚动效果
+                
+              </p>
+              1). 在
+              <code>
+                head
+              </code>
+              中导入css和js文件
+<pre>
+<code class="prettyprint">
+&lt;link href=&quot;css/uploadfile.min.css&quot;rel=&quot;stylesheet&quot;&gt; 
+&lt;script src=&quot;js/jquery-1.10.2.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/jquery.itemScroll.js&quot;&gt;&lt;/script&gt;
+</code>
+</pre>
+              <br/>
+              2). 在
+              <code>
+                body
+              </code>
+              中添加待滚动的列表项
+<pre>
+<code class="prettyprint">
+<div>&lt;div class="product_item" id="game_item"&gt;</div><div>&nbsp; &nbsp;&lt;div class="product_item_title"&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&lt;div class="product_item_title_left"&gt;游戏(HTML5+cocos2d-X+XNA)&lt;/div&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&lt;div class="product_item_title_right"&gt;&gt;&lt;/div&gt;</div><div>&nbsp; &nbsp;&lt;/div&gt;</div><div>&nbsp; &nbsp;&nbsp;</div><div>&nbsp; &nbsp; &lt;ul class="product_list"&gt;</div><div>&nbsp; &nbsp; &nbsp; &lt;li class="product_list_item"&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &lt;div class="product_shortcut"&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&lt;a href="http://xiebaochun.github.io/bikegame"&gt;&lt;img src="http://xiebaochun.github.io/bikegame/images/shortCut.jpg"&gt;&lt;/a&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</div><div>&nbsp; &nbsp; &nbsp; &lt;/li&gt;</div><div>&nbsp; &nbsp; &nbsp; &lt;li class="product_list_item"&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&lt;div class="product_shortcut"&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&lt;img src="http://xiebaochun.github.io/websiteresource/partygame/min/bg_cover_1.png"&gt;&nbsp;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;</div><div>&nbsp; &nbsp; &nbsp; &lt;/li&gt;</div><div>&nbsp; &nbsp; &nbsp; &lt;li class="product_list_item"&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&lt;div class="product_shortcut"&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&lt;img src="http://xiebaochun.github.io/websiteresource/arcadegame/min/GameEnd.png"&gt;&nbsp;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;</div><div>&nbsp; &nbsp; &nbsp; &lt;/li&gt;</div><div>&nbsp; &nbsp; &lt;/ul&gt;</div><div>&nbsp; &nbsp; &lt;div class="arroy arroy_left"&gt;&lt;&lt;/div&gt;</div><div>&nbsp; &nbsp; &lt;div class="arroy arroy_right"&gt;&gt;&lt;/div&gt; &nbsp; &nbsp;</div><div>&nbsp; &nbsp; &lt;div class="ls_index"&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp;&lt;a href="#" data-index="1"&gt;&lt;/a&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp;&lt;a href="#" data-index="2"&gt;&lt;/a&gt;</div><div>&nbsp; &nbsp; &nbsp; &nbsp;&lt;a href="#" data-index="3"&gt;&lt;/a&gt;</div><div>&nbsp; &nbsp; &lt;/div&gt;</div><div>&lt;/div&gt;</div>
+</code>
+</pre>
+              <br>
+              3).当
+              <code>
+                document
+              </code>
+              准备就绪，初始化插件 .
+<pre><code class="prettyprint">&lt;script&gt;
+$(document).ready(function()
+{
+  $("#game_item").itemScroll({currentIndex:1});
+});
+&lt;/script&gt;</code></pre>
+
+              <br/>
+              <b>
+                就这么简单.
+              </b>
+              jQuery内容滚动已经准备好了，效果如下：
+              <div class="product_item" id="game_item">
+                 <div class="product_item_title">
+                       <div class="product_item_title_left">Demo</div>
+                       <div class="product_item_title_right">></div>
+                 </div>
+                  
+                  <ul class="product_list">
+                    <li class="product_list_item">
+                      <div class="product_shortcut">
+                         <a href="http://xiebaochun.github.io/bikegame"><img src="http://xiebaochun.github.io/bikegame/images/shortCut.jpg"></a>
+                      </div>
+                       
+                    </li>
+                    <li class="product_list_item">
+                       <div class="product_shortcut">
+                         <img src="http://xiebaochun.github.io/websiteresource/partygame/min/bg_cover_1.png"> 
+                      </div>
+                    </li>
+                    <li class="product_list_item">
+                       <div class="product_shortcut">
+                         <img src="http://xiebaochun.github.io/websiteresource/arcadegame/min/GameEnd.png"> 
+                      </div>
+                    </li>
+                  </ul>
+                  <div class="arroy arroy_left"><</div>
+                  <div class="arroy arroy_right">></div>    
+                  <div class="ls_index">
+                     <a href="#" data-index="1"></a>
+                     <a href="#" data-index="2"></a>
+                     <a href="#" data-index="3"></a>
+                  </div>
+              </div>
+              
+            </div>
+            <div class="tab-pane fade" id="single">
+              <p>
+                <h4>
+                  文件上传
+                </h4>
+                源码:
+<pre><code class="prettyprint">$(&quot;#singleupload1&quot;).uploadFile({
+  url:&quot;php/upload.php&quot;
+  });</code></pre>
+                结果:
+                <div id="singleupload1">
+                  上传
+                </div>
+                <br/>
+                <br/>
+                <br/>
+                <h4>
+                  文件格式限制
+                </h4>
+                代码:
+<pre><code class="prettyprint">$(&quot;#singleupload2&quot;).uploadFile({
+url:&quot;php/upload.php&quot;,
+allowedTypes:&quot;png,gif,jpg,jpeg&quot;,
+fileName:&quot;myfile&quot;
+});</code></pre>
+                结果:
+                <div id="singleupload2">
+                  上传
+                </div>
+              </p>
+            </div>
+            <div class="tab-pane fade" id="advanced">
+              <p>
+                <h4>
+                  高级文件上传
+                </h4>
+                代码:
+<pre><code class="prettyprint">var uploadObj = $(&quot;#advancedUpload&quot;).uploadFile({
+url:&quot;php/upload.php&quot;,
+multiple:true,
+autoSubmit:true,
+fileName:&quot;myfile&quot;,
+formData: {&quot;name&quot;:&quot;Ravi&quot;,&quot;age&quot;:31},
+maxFileSize:1024*100,
+maxFileCount:1,
+dynamicFormData: function()
+{
+  var data ={ location:&quot;INDIA&quot;}
+  return data;
+},
+showStatusAfterSuccess:false,
+dragDropStr: &quot;&lt;span>&lt;b&gt;将文件拖拽至此处&lt;/b&gt;&lt;/span&gt;&quot;,
+abortStr:&quot;上传被拒绝&quot;,
+cancelStr:&quot;取消&quot;,
+doneStr:&quot;完成&quot;,
+multiDragErrorStr: &quot;奥 &amp; 拖拽的大多了.&quot;,
+extErrorStr:&quot;文件错误:&quot;,
+sizeErrorStr:&quot;文件太大了:&quot;,
+uploadErrorStr:&quot;上传失败！&quot;
+
+});
+$(&quot;#startUpload&quot;).click(function()
+{
+  uploadObj.startUpload();
+});</code></pre>
+                <br/>
+                结果:
+                <div id="advancedUpload">
+                  上传
+                </div>
+                <br/>
+                <br/>
+                <!-- <div id="startUpload" class="ajax-file-upload-green">
+                  Start 上传
+                </div> -->
+              </p>
+              <br/>
+              <hr>
+              <p>
+                <h4>
+                  Jquery删除文件配置
+                </h4>
+<pre><code class="prettyprint">$(&quot;#deleteFileUpload&quot;).uploadFile({
+ url: &quot;upload.php&quot;,
+ dragDrop: true,
+ fileName: &quot;myfile&quot;,
+ returnType: &quot;json&quot;,
+ showDelete: true,
+ deleteCallback: function (data, pd) {
+     for (var i = 0; i &lt; data.length; i++) {
+         $.post(&quot;delete.php&quot;, {op: &quot;delete&quot;,name: data[i]},
+             function (resp,textStatus, jqXHR) {
+                 //Show Message 
+                 alert(&quot;File Deleted&quot;);
+             });
+     }
+     pd.statusbar.hide(); //可选.
+}
+ });</code></pre>
+                结果:
+                <div id="deleteFileUpload">
+                  文件上传 (删除)
+                </div>
+              </p>
+            </div>
+            <div class="tab-pane fade" id="multi">
+              <p>
+                <h4>
+                  Jquery多文件上传
+                </h4>
+                代码:
+<pre>
+<code class="prettyprint">
+$(&quot;#multipleupload&quot;).uploadFile({ 
+url:&quot;php/upload.php&quot;,
+multiple:true,
+fileName:&quot;myfile&quot; 
+});
+</code>
+</pre>
+                <br/>
+                结果:
+                <div id="multipleupload">
+                  上传
+                </div>
+              </p>
+            </div>
+            <div class="tab-pane fade" id="event">
+              <p>
+                <h4>
+                  Jquery文件上传事件
+                </h4>
+                代码:
+<pre><code class="prettyprint">$(&quot;#eventsupload&quot;).uploadFile({
+url:&quot;php/upload.php&quot;,
+multiple:true,
+fileName:&quot;myfile&quot;,
+onSubmit:function(files)
+{
+  $(&quot;#eventsmessage&quot;).html($(&quot;#eventsmessage&quot;).html()+&quot;&lt;br/&gt;Submitting:&quot;+JSON.stringify(files));
+},
+onSuccess:function(files,data,xhr)
+{
+  $(&quot;#eventsmessage&quot;).html($(&quot;#eventsmessage&quot;).html()+&quot;&lt;br/&gt;Success for: &quot;+JSON.stringify(data));
+  
+},
+afterUploadAll:function()
+{
+  $(&quot;#eventsmessage&quot;).html($(&quot;#eventsmessage&quot;).html()+&quot;&lt;br/&gt;All files are uploaded&quot;);
+  
+},
+onError: function(files,status,errMsg)
+{
+  $(&quot;#eventsmessage&quot;).html($(&quot;#eventsmessage&quot;).html()+&quot;&lt;br/&gt;Error for: &quot;+JSON.stringify(files));
+}
+});</code></pre>
+                <br/>
+                结果:
+                <div id="eventsupload">
+                  上传
+                </div>
+                <div id="eventsmessage">
+                  <b>
+                    事件:
+                  </b>
+                </div>
+              </p>
+            </div>
+            <div class="tab-pane fade" id="others">
+              <p>
+                <h4>
+                  隐藏Cancel,Abort,Done按钮
+                </h4>
+                代码:
+<pre><code class="prettyprint">$(&quot;#stylingupload1&quot;).uploadFile({
+url:&quot;php/upload.php&quot;,
+multiple:true,
+fileName:&quot;myfile&quot;,
+showStatusAfterSuccess:false,
+showAbort:false,
+showDone:false,
+});</code></pre>
+                <br/>
+                结果:
+                <div id="stylingupload1">
+                  上传
+                </div>
+                <br/>
+                <br/>
+                <br/>
+                <h4>
+                  改变上传按钮的样式
+                </h4>
+                代码:
+<pre><code class="prettyprint">$(&quot;#stylingupload2&quot;).uploadFile({
+url:&quot;php/upload.php&quot;,
+multiple:true,
+fileName:&quot;myfile&quot;,
+showStatusAfterSuccess:false,
+showAbort:false,
+showDone:false,
+uploadButtonClass:&quot;ajax-file-upload-green&quot;
+});</code></pre>
+                <br/>
+                结果:
+                <div id="stylingupload2">
+                  上传
+                </div>
+              </p>
+            </div>
+            <div class="tab-pane fade" id="doc">
+              <h4>
+                jQuery上传文件API
+              </h4>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    uploadFile
+                  </b>
+                </code>
+                <br/>
+                创建Ajax表单并上传文件至服务器
+<pre>
+<code class="prettyprint">
+var uploadObj = $("#uploadDivId").uploadFile(options);.
+</code>
+                </pre>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    startUpload
+                  </b>
+                </code>
+                <br/>
+                上传所有已选择的文件，当
+                <code>
+                  autoSubmit
+                </code>
+                设置为
+                <code>
+                  false时使用这个函数
+                </code>
+                .
+<pre>
+<code class="prettyprint">
+uploadObj.startUpload();
+</code>
+</pre>
+              </p>
+              <br/>
+              <hr/>
+              <h4>
+                选项
+              </h4>
+              <p>
+                <code>
+                  <b>
+                    url
+                  </b>
+                </code>
+                <br/>
+                服务端URL地址，用来处理上传的文件
+                <br/>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    method
+                  </b>
+                </code>
+                <br/>
+                上传表单的方法类型
+                <code>
+                  POST
+                </code>
+                或者
+                <code>
+                  GET
+                </code>
+                . 默认为
+                <code>
+                  POST
+                </code>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    enctype
+                  </b>
+                </code>
+                <br/>
+                上传表单的 enctype. 默认为
+                <code>
+                  multipart/form-data
+                </code>
+                .
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    formData
+                  </b>
+                </code>
+                <br/>
+                上传文件时会被一起发送的json对象.
+                <code>
+                  data: { key1: 'value1', key2: 'value2' }
+                </code>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    returnType
+                  </b>
+                </code>
+                <br>
+                期望响应返回的数据类型. 可以是以下中的一个:
+                <code>
+                  null
+                </code>
+                ,
+                <code>
+                  'xml'
+                </code>
+                ,
+                <code>
+                  'script'
+                </code>
+                , or
+                <code>
+                  'json'
+                </code>
+                . returnType 选项明确了服务端如何处理响应. 支持以下几种数据格式:
+                <br/>
+                <code>
+                  xml
+                </code>
+                : 如果returnType 等于 'xml' 那么服务端将响应的数据转换成xml格式，并且如果指定了'success' 回调函数，那么它将会传进responseXML数据值
+                <br/>
+                <code>
+                  json
+                </code>
+                : 如果returnType 等于'json' ，那么服务端的响应将会被evaluted并且会被传递给 'success'回调函数（如果有指定的话）
+                <br/>
+                <code>
+                  script
+                </code>
+                : 如果returnType 等于 'script'，那么服务端的响应将被evaluated在全局上下文中。
+                <br/>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    allowedTypes
+                  </b>
+                </code>
+                <br/>
+                用逗号隔开独立的文件后缀名. 默认为
+                <code>
+                  "*"
+                </code>
+                . 例如:
+                <code>
+                  "jpg,png,gif"
+                </code>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    fileName
+                  </b>
+                </code>
+                <br/>
+                输入框中的文件名.默认为
+                <code>
+                  file
+                </code>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    multiple
+                  </b>
+                </code>
+                <br/>
+                如果设置为
+                <code>
+                  true
+                </code>
+                , 那么允许选择多文件. 默认为
+                <code>
+                  false
+                </code>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    maxFileSize
+                  </b>
+                </code>
+                <br/>
+                允许支持的最大文件大小（按字节计算）.
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    maxFileCount
+                  </b>
+                </code>
+                <br/>
+                允许上传的最大文件数量.
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    autoSubmit
+                  </b>
+                </code>
+                <br/>
+                如果设置为
+                <code>
+                  true
+                </code>
+                , 文件将自动上传. 否则你需要手动调用
+                <code>
+                  .startUpload
+                </code>
+                函数. 默认为
+                <code>
+                  true
+                </code>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    showCancel
+                  </b>
+                </code>
+                <br/>
+                如果设置为
+                <code>
+                  false
+                </code>
+                , Cancel按钮被会被隐藏当
+                <code>
+                  autoSubmit
+                </code>
+                为false时. 默认为
+                <code>
+                  true
+                </code>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    showAbort
+                  </b>
+                </code>
+                <br/>
+                如果设置为
+                <code>
+                  false
+                </code>
+                , Abort在上传文件时将会被隐藏. 默认为
+                <code>
+                  true
+                </code>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    showDone
+                  </b>
+                </code>
+                <br/>
+                如果设置为
+                <code>
+                  false
+                </code>
+                , Done按钮在上传完毕后将会被隐藏. 默认为
+                <code>
+                  true
+                </code>
+              </p>
+              <br/>
+              <p>
+                <code>
+                  <b>
+                    showDelete
+                  </b>
+                </code>
+                <br/>
+                如果设置为
+                <code>
+                  true
+                </code>
+                , Delete按钮当在上传完毕后将会出现. 默认为
+                <code>
+                  false
+                </code>
+                ,You need to implement
+                <code>
+                  deleteCallback()
+                </code>
+                function.
+                <p>
+                  <code>
+                    <b>
+                      showProgress
+                    </b>
+                  </code>
+                  <br/>
+                  如果设置为
+                  <code>
+                    true
+                  </code>
+                  , 将会显示进度. 默认为
+                  <code>
+                    false
+                  </code>
+                </p>
+                <br/>
+                <p>
+                  <code>
+                    <b>
+                      showFileCounter
+                    </b>
+                  </code>
+                  <br/>
+                  如果设置为
+                  <code>
+                    true
+                  </code>
+                  , 将显示文件的计数. 默认为
+                  <code>
+                    true
+                  </code>
+                  文件计数可以通过
+                  <code>
+                    fileCounterStyle
+                  </code>
+                  改变. 默认为
+                  <code>
+                    ).
+                  </code>
+                </p>
+                <br/>
+                <p>
+                  <code>
+                    <b>
+                      showStatusAfterSuccess
+                    </b>
+                  </code>
+                  <br/>
+                  如果设置为
+                  <code>
+                    false
+                  </code>
+                  , status框在上传完毕后将隐藏. 默认为
+                  <code>
+                    true
+                  </code>
+                </p>
+                <br/>
+                <p>
+                  <code>
+                    <b>
+                      onSelect
+                    </b>
+                  </code>
+                  <br/>
+                  当文件被选中或者被拖进来时将会调用此函数
+<pre>
+<code class="prettyprint">
+onSelect:function(files) { 
+files[0].name; 
+return true; //允许文件上传. 
+}
+</code>
+</pre>
+                </p>
+                <br/>
+                <p>
+                  <code>
+                    <b>
+                      onSubmit
+                    </b>
+                  </code>
+                  <br/>
+                  在文件上传之前会被调用.
+<pre>
+<code class="prettyprint">
+onSubmit:function(files) { 
+//files : 列出需要上传的文件 
+//return false; 停止上传
+}
+</code>
+</pre>
+                </p>
+                <br/>
+                <p>
+                  <code>
+                    <b>
+                      onSuccess
+                    </b>
+                  </code>
+                  <br/>
+                  当文件上传成功时将会被调用.
+<pre>
+<code class="prettyprint">
+onSuccess:function(files,data,xhr) { 
+//files: 列出文件 
+//data: 服务端的响应 
+//xhr : jquery的 xhr 对象 
+}
+</code>
+</pre>
+                  <p>
+                    <code>
+                      <b>
+                        afterUploadAll
+                      </b>
+                    </code>
+                    <br/>
+                    当文件上床完毕后将会被调用.
+<pre>
+<code class="prettyprint">
+afterUploadAll:function() { }
+</code>
+</pre>
+                  </p>
+                  <br/>
+                  <p>
+                    <code>
+                      <b>
+                        onError
+                      </b>
+                    </code>
+                    <br/>
+                   文件上传失败后将会被调用.
+<pre>
+<code class="prettyprint">
+onError: function(files,status,errMsg) { 
+//files: 列出文件 
+//status: 错误状态 
+//errMsg: 错误信息
+ }
+</code>
+</pre>
+                  </p>
+                  <br/>
+                  <p>
+                    <code>
+                      <b>
+                        deleteCallback
+                      </b>
+                    </code>
+                    <br/>
+                    当用户点击Delete按钮之后将会被调用。
+<pre><code class="prettyprint">deleteCallback: function(data,pd)
+{
+  for(var i=0;i&lt;data.length;i++)
+  {
+    $.post(&quot;delete.php&quot;,{op:&quot;delete&quot;,name:data[i]},
+      function(resp, textStatus, jqXHR)
+      {
+      //Show Message  
+      alert(&quot;File Deleted&quot;);      
+      });
+   }    
+  pd.statusbar.hide(); //可以选择隐藏或不隐藏.
+
+}</code></pre>
+                  </p>
+                  <br/>
+                  <p>
+                    <code>
+                      <b>
+                        uploadButtonClass
+                      </b>
+                    </code>
+                    <br/>
+                    上传按钮样式. 默认为
+                    <code>
+                      ajax-file-upload
+                    </code>
+                  </p>
+                  <br/>
+            </div>
+            <div class="tab-pane fade" id="server">
+              <p>
+                <h4>
+                  处理多文件上传的php代码
+                </h4>
+                upload.php 代码:
+<pre><code class="prettyprint">&lt;?php
+$output_dir = &quot;uploads/&quot;;
+if(isset($_FILES[&quot;myfile&quot;]))
+{
+  $ret = array();
+
+  $error =$_FILES[&quot;myfile&quot;][&quot;error&quot;];
+  //需要处理这两种情况
+  //如果浏览器不支持多文件的序列化，请使用FormData()
+  if(!is_array($_FILES[&quot;myfile&quot;][&quot;name&quot;])) //单个文件
+  {
+    $fileName = $_FILES[&quot;myfile&quot;][&quot;name&quot;];
+    move_uploaded_file($_FILES[&quot;myfile&quot;][&quot;tmp_name&quot;],$output_dir.$fileName);
+      $ret[]= $fileName;
+  }
+  else  //多个文件, file[]
+  {
+    $fileCount = count($_FILES[&quot;myfile&quot;][&quot;name&quot;]);
+    for($i=0; $i &lt; $fileCount; $i++)
+    {
+      $fileName = $_FILES[&quot;myfile&quot;][&quot;name&quot;][$i];
+    move_uploaded_file($_FILES[&quot;myfile&quot;][&quot;tmp_name&quot;][$i],$output_dir.$fileName);
+      $ret[]= $fileName;
+    }
+  
+  }
+    echo json_encode($ret);
+ }
+ ?&gt;</code></pre>
+                <br/>
+              </p>
+              <br/>
+              delete.php 代码 code:
+<pre><code class="prettyprint">&lt;?php
+$output_dir = &quot;uploads/&quot;;
+if(isset($_POST[&quot;op&quot;]) &amp;&amp; $_POST[&quot;op&quot;] == &quot;delete&quot; &amp;&amp; isset($_POST[&#39;name&#39;]))
+{
+  $fileName =$_POST[&#39;name&#39;];
+  $filePath = $output_dir. $fileName;
+  if (file_exists($filePath)) 
+  {
+        unlink($filePath);
+    }
+  echo &quot;Deleted File &quot;.$fileName.&quot;&lt;br&gt;&quot;;
+}
+?&gt;</code></pre>
+              <h4>
+                服务端配置-大文件上传
+              </h4>
+              <b>
+                php.ini 配置
+              </b>
+<pre>
+<code class="prettyprint">
+max_file_uploads = 2000 
+upload_max_filesize = 40000M 
+max_input_vars =10000 
+post_max_size = 40000M
+</code>
+</pre>
+              <br>
+              <b>
+                httpd.conf 配置
+              </b>
+<pre>
+<code class="prettyprint">
+php_value suhosin.post.max_vars 10000 
+php_value suhosin.request.max_vars 10000 
+php_value suhosin.get.max_array_depth 2000 
+php_value suhosin.get.max_vars 10000 
+php_value suhosin.upload.max_uploads 2000
+</code>
+</pre>
+            </div>
+          </div>
+      </section>
+       <hr>
+
+      <footer id="footer">
+      
+      <div class="links">
+          CopyRight by 
+          <a href="http://xiebaochun.github.io" >微个日光日</a> 
+          Powered by 
+          <a href="http://getbootstrap.com/javascript/" >BootStrap</a>
+          
+      </div>
+      </footer>
+      <br/>
+      <br/>
+
+      </div>
+      <!-- /container -->
+      
+      <script>
+        $(document).ready(function() {
+
+          $('a[rel=tooltip]').tooltip({
+            'placement': 'bottom'
+          });
+        });
+
+        $(document).ready(function() {
+          $("#singleupload1").uploadFile({
+            url: "php/upload.php"
+          });
+
+          $("#singleupload2").uploadFile({
+            url: "php/upload.php",
+            allowedTypes: "png,gif,jpg,jpeg",
+            fileName: "myfile"
+          });
+
+          $("#multipleupload").uploadFile({
+            url: "php/upload.php",
+            multiple: true,
+            fileName: "myfile"
+          });
+
+          var uploadObj = $("#advancedUpload").uploadFile({
+            url: "php/upload.php",
+            multiple: true,
+            autoSubmit: true,
+            fileName: "myfile",
+            formData: {
+              "name": "Ravi",
+              "age": 31
+            },
+            maxFileSize: 1024 * 100,
+            maxFileCount: 1,
+            dynamicFormData: function() {
+              var data = {
+                location: "INDIA"
+              }
+              return data;
+            },
+            showStatusAfterSuccess: false,
+            dragDropStr: "<span><b>将文件拖拽至此处</b></span>",
+            abortStr:"上传被拒绝",
+            cancelStr:"取消",
+            doneStr:"完成",
+            multiDragErrorStr: "奥 & 拖拽的大多了.",
+            extErrorStr:"文件错误:",
+            sizeErrorStr:"文件太大了:",
+            uploadErrorStr:"上传失败！"
+          });
+
+          $("#startUpload").click(function() {
+            uploadObj.startUpload();
+          });
+
+          var deleteuploadObj = $("#deleteFileUpload").uploadFile({
+            url: "upload.php",
+            dragDrop: true,
+            fileName: "myfile",
+            returnType: "json",
+            showDelete: true,
+            deleteCallback: function(data, pd) {
+              for (var i = 0; i < data.length; i++) {
+                $.post("delete.php", {
+                  op: "delete",
+                  name: data[i]
+                },
+                function(resp, textStatus, jqXHR) {
+                  //Show Message  
+                  alert("File Deleted");
+                });
+              }
+              pd.statusbar.hide(); //You choice.
+            }
+          });
+
+          $("#eventsupload").uploadFile({
+            url: "php/upload.php",
+            multiple: true,
+            fileName: "myfile",
+            onSubmit: function(files) {
+              $("#eventsmessage").html($("#eventsmessage").html() + "<br/>Submitting:" + JSON.stringify(files));
+            },
+            onSuccess: function(files, data, xhr) {
+              $("#eventsmessage").html($("#eventsmessage").html() + "<br/>Success for: " + JSON.stringify(data));
+
+            },
+            afterUploadAll: function() {
+              $("#eventsmessage").html($("#eventsmessage").html() + "<br/>All files are uploaded");
+
+            },
+            onError: function(files, status, errMsg) {
+              $("#eventsmessage").html($("#eventsmessage").html() + "<br/>Error for: " + JSON.stringify(files));
+            }
+          });
+
+          $("#stylingupload1").uploadFile({
+            url: "php/upload.php",
+            multiple: true,
+            fileName: "myfile",
+            showStatusAfterSuccess: false,
+            showAbort: false,
+            showDone: false,
+          });
+
+          $("#stylingupload2").uploadFile({
+            url: "php/upload.php",
+            multiple: true,
+            fileName: "myfile",
+            showStatusAfterSuccess: false,
+            showAbort: false,
+            showDone: false,
+            uploadButtonClass: "ajax-file-upload-green"
+          });
+
+        });
+      </script>
+  </body>
+
+</html>
